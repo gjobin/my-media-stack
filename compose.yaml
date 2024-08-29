@@ -1,0 +1,362 @@
+name: mms
+services:
+  plex:
+    image: lscr.io/linuxserver/plex
+    container_name: ${CONTAINER_PREFIX}plex
+    network_mode: host
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - VERSION=latest
+      - PLEX_CLAIM=${PLEX_CLAIM}
+    volumes:
+      - ${APPDATA_PATH}/plex:/config
+      - ${DATA_PATH_ROOT}${DATA_PATH_MEDIA}:/medias
+      - type: tmpfs
+        target: /transcode
+        tmpfs:
+          size: ${PLEX_TMPFS_TRANSCODE_SIZE}
+    ports:
+      - 32400:32400
+    labels:
+      - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/324832?s=200&v=4
+      - net.unraid.docker.webui=http://[IP]:[PORT:32400]/web
+    restart: unless-stopped
+  tautulli:
+    image: lscr.io/linuxserver/tautulli
+    container_name: ${CONTAINER_PREFIX}tautulli
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/tautulli:/config
+    ports:
+      - 8181:8181
+    networks:
+      - default
+      - internal
+    extra_hosts:
+      - plex:host-gateway
+    labels:
+      - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/34385001?s=200&v=4
+      - net.unraid.docker.webui=http://[IP]:[PORT:8181]
+    restart: unless-stopped
+  plex-auto-languages:
+    image: remirigal/plex-auto-languages
+    container_name: ${CONTAINER_PREFIX}plex-auto-languages
+    user: ${PUID}:${PGID}
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    networks:
+      - default
+      - internal
+    extra_hosts:
+      - plex:host-gateway
+    volumes:
+      # make sure you have a file named 'config.yaml' in the 'config' dir
+      - ${APPDATA_PATH}/plex-auto-languages:/config
+    labels:
+      - net.unraid.docker.icon=https://raw.githubusercontent.com/superboki/ressources/main/plex-auto-languages/plex_auto_languages.png
+    restart: unless-stopped
+  overseerr:
+    image: lscr.io/linuxserver/overseerr
+    container_name: ${CONTAINER_PREFIX}overseerr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/overseerr:/config
+    ports:
+      - 5055:5055
+    networks:
+      - default
+      - internal
+    labels:
+      - net.unraid.docker.icon=https://github.com/sct/overseerr/blob/develop/public/android-chrome-192x192.png?raw=true
+      - net.unraid.docker.webui=http://[IP]:[PORT:5055]
+    restart: unless-stopped
+  radarr:
+    image: lscr.io/linuxserver/radarr
+    container_name: ${CONTAINER_PREFIX}radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/radarr:/config
+      - ${DATA_PATH_ROOT}:/data
+    ports:
+      - 7878:7878
+    networks:
+      - default
+      - internal
+    labels:
+      - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/25025331?s=200&v=4
+      - net.unraid.docker.webui=http://[IP]:[PORT:7878]
+    restart: unless-stopped
+  radarr-4k:
+    image: lscr.io/linuxserver/radarr
+    container_name: ${CONTAINER_PREFIX}radarr-4k
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/radarr-4k:/config
+      - ${DATA_PATH_ROOT}:/data
+    ports:
+      - 7879:7878
+    networks:
+      - default
+      - internal
+    labels:
+      - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/25025331?s=200&v=4
+      - net.unraid.docker.webui=http://[IP]:[PORT:7879]
+    restart: unless-stopped
+  sonarr:
+    image: lscr.io/linuxserver/sonarr
+    container_name: ${CONTAINER_PREFIX}sonarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/sonarr:/config
+      - ${DATA_PATH_ROOT}:/data
+    ports:
+      - 8989:8989
+    networks:
+      - default
+      - internal
+    labels:
+      - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/1082903?s=200&v=4
+      - net.unraid.docker.webui=http://[IP]:[PORT:8989]
+    restart: unless-stopped
+  sonarr-4k:
+    image: lscr.io/linuxserver/sonarr
+    container_name: ${CONTAINER_PREFIX}sonarr-4k
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/sonarr-4k:/config
+      - ${DATA_PATH_ROOT}:/data
+    ports:
+      - 8990:8989
+    networks:
+      - default
+      - internal
+    labels:
+      - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/1082903?s=200&v=4
+      - net.unraid.docker.webui=http://[IP]:[PORT:8990]
+    restart: unless-stopped
+  bazarr:
+    image: lscr.io/linuxserver/bazarr
+    container_name: ${CONTAINER_PREFIX}bazarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/bazarr:/config
+      - ${DATA_PATH_ROOT}${DATA_PATH_MEDIA}:/media
+    ports:
+      - 6767:6767
+    networks:
+      - default
+      - internal
+    labels:
+      - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/44780843?s=200&v=4
+      - net.unraid.docker.webui=http://[IP]:[PORT:6767]
+    restart: unless-stopped
+  bazarr-4k:
+    image: lscr.io/linuxserver/bazarr
+    container_name: ${CONTAINER_PREFIX}bazarr-4k
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/bazarr-4k:/config
+      - ${DATA_PATH_ROOT}${DATA_PATH_MEDIA}:/media
+    ports:
+      - 6768:6767
+    networks:
+      - default
+      - internal
+    labels:
+      - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/44780843?s=200&v=4
+      - net.unraid.docker.webui=http://[IP]:[PORT:6768]
+    restart: unless-stopped
+  kometa:
+    image: lscr.io/linuxserver/kometa
+    container_name: ${CONTAINER_PREFIX}kometa
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - KOMETA_CONFIG=/config/config.yml
+      - KOMETA_TIME=${KOMETA_TIME}
+      - KOMETA_RUN=${KOMETA_RUN}
+      - KOMETA_TEST=${KOMETA_TEST}
+    volumes:
+      - ${APPDATA_PATH}/kometa:/config
+    networks:
+      - default
+      - internal
+    extra_hosts:
+      - plex:host-gateway
+    labels:
+      - net.unraid.docker.icon=https://a.thumbs.redditmedia.com/jxT3aYQAjtC6QSKj7coUaL_xi3RPcg8Et5t-UbWNHf4.png
+    restart: unless-stopped
+  prowlarr:
+    image: linuxserver/prowlarr
+    container_name: ${CONTAINER_PREFIX}prowlarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    ports:
+      - 9696:9696
+    networks:
+      - internal
+      - ${VPN_NETWORK_INTERFACE}
+    labels:
+      - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/73049443?s=200&v=4
+      - net.unraid.docker.webui=http://[IP]:[PORT:9696]
+    volumes:
+      - ${APPDATA_PATH}/prowlarr:/config
+    restart: unless-stopped
+  notifiarr:
+    image: golift/notifiarr
+    container_name: ${CONTAINER_PREFIX}notifiarr
+    user: ${PUID}:${PGID}
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/notifiarr:/config
+      - /var/run/utmp:/var/run/utmp
+      - /etc/machine-id:/etc/machine-id
+    ports:
+      - 5454:5454
+    networks:
+      - default
+      - internal
+    labels:
+      - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/77931263?s=200&v=4
+      - net.unraid.docker.webui=http://[IP]:[PORT:5454]
+    restart: unless-stopped
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr
+    container_name: ${CONTAINER_PREFIX}flaresolverr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - LOG_LEVEL=info
+      - LANG=en_US
+    ports:
+      - 8191:8191
+    networks:
+      - internal
+      - ${VPN_NETWORK_INTERFACE}
+    labels:
+      - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/75936191?s=200&v=4
+      - net.unraid.docker.webui=http://[IP]:[PORT:8191]
+    restart: unless-stopped
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd
+    container_name: ${CONTAINER_PREFIX}sabnzbd
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/sabnzbd:/config
+      - ${DATA_PATH_ROOT}${DATA_PATH_DOWNLOAD}:/download
+    ports:
+      - 7226:8080
+    networks:
+      - default
+      - internal
+    extra_hosts:
+      - plex:host-gateway
+    labels:
+      - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/960698?s=200&v=4
+      - net.unraid.docker.webui=http://[IP]:[PORT:7226]
+    restart: unless-stopped
+  syncthing:
+    image: lscr.io/linuxserver/syncthing
+    container_name: ${CONTAINER_PREFIX}syncthing
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/syncthing:/config
+      - ${DATA_PATH_ROOT}${DATA_PATH_DOWNLOAD}/qbittorrent:/download/qbittorrent
+    ports:
+      - 8384:8384
+      - 22000:22000/tcp
+      - 22000:22000/udp
+      - 21027:21027/udp
+    networks:
+      - default
+    labels:
+      - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/7628018?s=200&v=4
+      - net.unraid.docker.webui=http://[IP]:[PORT:8384]
+    restart: unless-stopped
+  unpackerr:
+    image: golift/unpackerr
+    container_name: ${CONTAINER_PREFIX}unpackerr
+    user: ${PUID}:${PGID}
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/unpackerr:/config
+      - ${DATA_PATH_ROOT}${DATA_PATH_DOWNLOAD}:/download
+    networks:
+      - default
+      - internal
+    labels:
+      - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/104323643?s=200&v=4
+    restart: unless-stopped
+networks:
+  internal:
+    internal: true
+  wg0:
+    external: true
+x-dockge:
+  urls:
+    - https://www.plex.tv/
+    - https://hub.docker.com/r/linuxserver/plex
+    - https://tautulli.com/
+    - https://hub.docker.com/r/linuxserver/tautulli
+    - https://overseerr.dev/
+    - https://hub.docker.com/r/linuxserver/overseerr
+    - https://radarr.video/
+    - https://hub.docker.com/r/linuxserver/radarr
+    - https://sonarr.tv/
+    - https://hub.docker.com/r/linuxserver/sonarr
+    - https://www.bazarr.media/
+    - https://hub.docker.com/r/linuxserver/bazarr
+    - https://kometa.wiki/
+    - https://hub.docker.com/r/linuxserver/kometa
+    - https://prowlarr.com/
+    - https://hub.docker.com/r/linuxserver/prowlarr
+    - https://github.com/orgs/FlareSolverr/packages/container/package/flaresolverr
+    - https://sabnzbd.org/
+    - https://hub.docker.com/r/linuxserver/sabnzbd
+    - https://syncthing.net/
+    - https://hub.docker.com/r/linuxserver/syncthing
+    - https://unpackerr.zip/
