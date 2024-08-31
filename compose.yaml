@@ -12,7 +12,7 @@ services:
       - PLEX_CLAIM=${PLEX_CLAIM}
     volumes:
       - ${APPDATA_PATH}/plex:/config
-      - ${DATA_PATH_ROOT}${DATA_PATH_MEDIA}:/medias
+      - ${DATA_PATH_ROOT}${DATA_PATH_MEDIA}:/media
       - type: tmpfs
         target: /transcode
         tmpfs:
@@ -281,7 +281,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ${APPDATA_PATH}/sabnzbd:/config
-      - ${DATA_PATH_ROOT}${DATA_PATH_DOWNLOAD}:/download
+      - ${DATA_PATH_ROOT}${DATA_PATH_DOWNLOAD}:/data/download
     ports:
       - 7226:8080
     networks:
@@ -302,7 +302,7 @@ services:
       - TZ=${TZ}
     volumes:
       - ${APPDATA_PATH}/syncthing:/config
-      - ${DATA_PATH_ROOT}${DATA_PATH_DOWNLOAD}/qbittorrent:/download/qbittorrent
+      - ${DATA_PATH_ROOT}${DATA_PATH_DOWNLOAD}/qbittorrent:/data/download/qbittorrent
     ports:
       - 8384:8384
       - 22000:22000/tcp
