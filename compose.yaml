@@ -76,6 +76,8 @@ services:
     networks:
       - default
       - internal
+    extra_hosts:
+      - plex:host-gateway
     labels:
       - net.unraid.docker.icon=https://github.com/sct/overseerr/blob/develop/public/android-chrome-192x192.png?raw=true
       - net.unraid.docker.webui=http://[IP]:[PORT:5055]
