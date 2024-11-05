@@ -1,8 +1,10 @@
 name: mms
 services:
+  # Plex Media Server
   plex:
     image: lscr.io/linuxserver/plex
     container_name: ${CONTAINER_PREFIX}plex
+    #Comment if you want to use `bridge` network_mode.
     network_mode: host
     environment:
       - PUID=${PUID}
@@ -10,6 +12,7 @@ services:
       - TZ=${TZ}
       - VERSION=latest
       - PLEX_CLAIM=${PLEX_CLAIM}
+    # Comment out if you are not using HW transcoding  
     devices:
       - /dev/dri:/dev/dri
     volumes:
@@ -19,12 +22,23 @@ services:
         target: /transcode
         tmpfs:
           size: ${PLEX_TMPFS_TRANSCODE_SIZE}
+    # Ports may cause a warning when used with `host` network mode, but would
+    # allow switching without extra configuration.
     ports:
       - 32400:32400
+      - 1900:1900/udp
+      - 5353:5353/udp
+      - 8324:8324
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
+      - 32469:32469
     labels:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/324832?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:32400]/web
     restart: unless-stopped
+  #Tautulli
   tautulli:
     image: lscr.io/linuxserver/tautulli
     container_name: ${CONTAINER_PREFIX}tautulli
@@ -39,12 +53,14 @@ services:
     networks:
       - default
       - internal
+      - ${CF_NETWORK_INTERFACE}
     extra_hosts:
       - plex:host-gateway
     labels:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/34385001?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:8181]
     restart: unless-stopped
+  #Plex Auto Languages
   plex-auto-languages:
     image: remirigal/plex-auto-languages
     container_name: ${CONTAINER_PREFIX}plex-auto-languages
@@ -64,6 +80,7 @@ services:
     labels:
       - net.unraid.docker.icon=https://raw.githubusercontent.com/superboki/ressources/main/plex-auto-languages/plex_auto_languages.png
     restart: unless-stopped
+  #Overseerr
   overseerr:
     image: lscr.io/linuxserver/overseerr
     container_name: ${CONTAINER_PREFIX}overseerr
@@ -78,12 +95,14 @@ services:
     networks:
       - default
       - internal
+      - ${CF_NETWORK_INTERFACE}
     extra_hosts:
       - plex:host-gateway
     labels:
       - net.unraid.docker.icon=https://github.com/sct/overseerr/blob/develop/public/android-chrome-192x192.png?raw=true
       - net.unraid.docker.webui=http://[IP]:[PORT:5055]
     restart: unless-stopped
+  #Radarr
   radarr:
     image: lscr.io/linuxserver/radarr
     container_name: ${CONTAINER_PREFIX}radarr
@@ -122,6 +141,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/25025331?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:7879]
     restart: unless-stopped
+  #Sonarr
   sonarr:
     image: lscr.io/linuxserver/sonarr
     container_name: ${CONTAINER_PREFIX}sonarr
@@ -160,6 +180,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/1082903?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:8990]
     restart: unless-stopped
+  #Bazarr
   bazarr:
     image: lscr.io/linuxserver/bazarr
     container_name: ${CONTAINER_PREFIX}bazarr
@@ -198,6 +219,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/44780843?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:6768]
     restart: unless-stopped
+  #Kometa
   kometa:
     image: kometateam/kometa
     container_name: ${CONTAINER_PREFIX}kometa
@@ -220,6 +242,7 @@ services:
     labels:
       - net.unraid.docker.icon=https://a.thumbs.redditmedia.com/jxT3aYQAjtC6QSKj7coUaL_xi3RPcg8Et5t-UbWNHf4.png
     restart: unless-stopped
+  #Prowlarr
   prowlarr:
     image: linuxserver/prowlarr
     container_name: ${CONTAINER_PREFIX}prowlarr
@@ -238,6 +261,7 @@ services:
     volumes:
       - ${APPDATA_PATH}/prowlarr:/config
     restart: unless-stopped
+  #Notifiarr
   notifiarr:
     image: golift/notifiarr
     container_name: ${CONTAINER_PREFIX}notifiarr
@@ -261,9 +285,11 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/77931263?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:5454]
     restart: unless-stopped
+  #FlareSolverr
   flaresolverr:
-    #    image: ghcr.io/flaresolverr/flaresolverr
-    image: 21hsmw/flaresolverr:nodrivertest
+    #image: ghcr.io/flaresolverr/flaresolverr
+    #image: 21hsmw/flaresolverr:nodrivertest
+    image: 21hsmw/flaresolverr:nodriver
     container_name: ${CONTAINER_PREFIX}flaresolverr
     environment:
       - PUID=${PUID}
@@ -280,6 +306,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/75936191?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:8191]
     restart: unless-stopped
+  #Sabnzbd
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd
     container_name: ${CONTAINER_PREFIX}sabnzbd
@@ -301,6 +328,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/960698?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:7226]
     restart: unless-stopped
+  #Syncthing
   syncthing:
     image: lscr.io/linuxserver/syncthing
     container_name: ${CONTAINER_PREFIX}syncthing
@@ -322,6 +350,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/7628018?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:8384]
     restart: unless-stopped
+  #Unpackerr
   unpackerr:
     image: golift/unpackerr
     container_name: ${CONTAINER_PREFIX}unpackerr
@@ -339,6 +368,7 @@ services:
     labels:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/104323643?s=200&v=4
     restart: unless-stopped
+  #Posterr
   posterr:
     image: petersem/posterr
     container_name: posterr
@@ -362,7 +392,11 @@ networks:
   internal:
     internal: true
     name: mms_internal
+  #Remove or replace depending on your VPN external network
   wg0:
+    external: true
+  #Remove or replace depending on your cloudflared external network
+  cloudflared:
     external: true
 x-dockge:
   urls:
