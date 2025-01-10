@@ -18,13 +18,10 @@ services:
     volumes:
       - ${APPDATA_PATH}/plex:/config
       - ${DATA_PATH_ROOT}${DATA_PATH_MEDIA}:/media
-      - type: tmpfs
-        target: /transcode
-        tmpfs:
-          size: ${PLEX_TMPFS_TRANSCODE_SIZE}
-    # Ports may cause a warning when used with `host` network mode, but would
-    # allow switching without extra configuration.
+      - /dev/shm/plex:/transcode
     ports:
+      # Ports may cause a warning when used with `host` network mode, but would
+      # allow switching without extra configuration.
       - 32400:32400
       - 1900:1900/udp
       - 5353:5353/udp
@@ -288,7 +285,6 @@ services:
   #FlareSolverr
   flaresolverr:
     #image: ghcr.io/flaresolverr/flaresolverr
-    #image: 21hsmw/flaresolverr:nodrivertest
     image: 21hsmw/flaresolverr:nodriver
     container_name: ${CONTAINER_PREFIX}flaresolverr
     environment:
@@ -388,6 +384,23 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/1418289?s=48&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:3000]
     restart: unless-stopped
+  #Calibre Web
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    volumes:
+      - ${APPDATA_PATH}/calibre-web:/config
+      - ${DATA_PATH_ROOT}${DATA_PATH_MEDIA}/books:/books
+    ports:
+      - 8083:8083
+    restart: unless-stopped
+#Networking
 networks:
   internal:
     internal: true
@@ -398,6 +411,7 @@ networks:
   #Remove or replace depending on your cloudflared external network
   cloudflared:
     external: true
+#Tags
 x-dockge:
   urls:
     - https://www.plex.tv/
