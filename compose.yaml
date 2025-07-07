@@ -1,5 +1,6 @@
 name: mms
 services:
+
   # Plex Media Server
   plex:
     image: lscr.io/linuxserver/plex
@@ -35,6 +36,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/324832?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:32400]/web
     restart: unless-stopped
+
   #Tautulli
   tautulli:
     image: lscr.io/linuxserver/tautulli
@@ -57,6 +59,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/34385001?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:8181]
     restart: unless-stopped
+
   #Plex Auto Languages
   plex-auto-languages:
     image: remirigal/plex-auto-languages
@@ -77,6 +80,7 @@ services:
     labels:
       - net.unraid.docker.icon=https://raw.githubusercontent.com/superboki/ressources/main/plex-auto-languages/plex_auto_languages.png
     restart: unless-stopped
+
   #Overseerr
   overseerr:
     image: lscr.io/linuxserver/overseerr
@@ -99,6 +103,7 @@ services:
       - net.unraid.docker.icon=https://github.com/sct/overseerr/blob/develop/public/android-chrome-192x192.png?raw=true
       - net.unraid.docker.webui=http://[IP]:[PORT:5055]
     restart: unless-stopped
+
   #Radarr
   radarr:
     image: lscr.io/linuxserver/radarr
@@ -119,6 +124,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/25025331?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:7878]
     restart: unless-stopped
+
   radarr-4k:
     image: lscr.io/linuxserver/radarr
     container_name: ${CONTAINER_PREFIX}radarr-4k
@@ -138,6 +144,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/25025331?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:7879]
     restart: unless-stopped
+
   #Sonarr
   sonarr:
     image: lscr.io/linuxserver/sonarr
@@ -158,6 +165,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/1082903?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:8989]
     restart: unless-stopped
+
   sonarr-4k:
     image: lscr.io/linuxserver/sonarr
     container_name: ${CONTAINER_PREFIX}sonarr-4k
@@ -177,6 +185,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/1082903?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:8990]
     restart: unless-stopped
+
   #Bazarr
   bazarr:
     image: lscr.io/linuxserver/bazarr
@@ -197,6 +206,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/44780843?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:6767]
     restart: unless-stopped
+
   bazarr-4k:
     image: lscr.io/linuxserver/bazarr
     container_name: ${CONTAINER_PREFIX}bazarr-4k
@@ -216,6 +226,30 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/44780843?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:6768]
     restart: unless-stopped
+
+  #Lidarr
+  lidarr:
+    image: lscr.io/linuxserver/lidarr
+    container_name: ${CONTAINER_PREFIX}lidarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/lidarr:/config
+      - ${DATA_PATH_ROOT}:/data
+    ports:
+      - 8686:8686
+    networks:
+      - default
+      - internal
+    extra_hosts:
+      - plex:host-gateway
+    labels:
+      - net.unraid.docker.icon=https://lidarr.audio/img/logo.png
+      - net.unraid.docker.webui=http://[IP]:[PORT:8686]
+    restart: unless-stopped
+
   #Kometa
   kometa:
     image: kometateam/kometa
@@ -239,6 +273,7 @@ services:
     labels:
       - net.unraid.docker.icon=https://a.thumbs.redditmedia.com/jxT3aYQAjtC6QSKj7coUaL_xi3RPcg8Et5t-UbWNHf4.png
     restart: unless-stopped
+
   #Prowlarr
   prowlarr:
     image: linuxserver/prowlarr
@@ -258,6 +293,7 @@ services:
     volumes:
       - ${APPDATA_PATH}/prowlarr:/config
     restart: unless-stopped
+
   #Notifiarr
   notifiarr:
     image: golift/notifiarr
@@ -270,7 +306,11 @@ services:
     volumes:
       - ${APPDATA_PATH}/notifiarr:/config
       - /var/run/utmp:/var/run/utmp
-      - /etc/machine-id:/etc/machine-id
+
+      - type: bind
+        source: /etc/machine-id
+        target: /etc/machine-id
+        read_only: true
     ports:
       - 5454:5454
     networks:
@@ -282,6 +322,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/77931263?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:5454]
     restart: unless-stopped
+
   #FlareSolverr
   flaresolverr:
     #image: ghcr.io/flaresolverr/flaresolverr
@@ -302,6 +343,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/75936191?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:8191]
     restart: unless-stopped
+
   #Sabnzbd
   sabnzbd:
     image: lscr.io/linuxserver/sabnzbd
@@ -324,6 +366,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/960698?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:7226]
     restart: unless-stopped
+
   #Syncthing
   syncthing:
     image: lscr.io/linuxserver/syncthing
@@ -346,6 +389,7 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/7628018?s=200&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:8384]
     restart: unless-stopped
+
   #Unpackerr
   unpackerr:
     image: golift/unpackerr
@@ -364,10 +408,11 @@ services:
     labels:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/104323643?s=200&v=4
     restart: unless-stopped
+
   #Posterr
   posterr:
     image: petersem/posterr
-    container_name: posterr
+    container_name: ${CONTAINER_PREFIX}posterr
     environment:
       TZ: ${TZ}
     volumes:
@@ -384,10 +429,11 @@ services:
       - net.unraid.docker.icon=https://avatars.githubusercontent.com/u/1418289?s=48&v=4
       - net.unraid.docker.webui=http://[IP]:[PORT:3000]
     restart: unless-stopped
+
   #Calibre Web
   calibre-web:
     image: lscr.io/linuxserver/calibre-web:latest
-    container_name: calibre-web
+    container_name: ${CONTAINER_PREFIX}calibre-web
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -399,7 +445,15 @@ services:
       - ${DATA_PATH_ROOT}${DATA_PATH_MEDIA}/books:/books
     ports:
       - 8083:8083
+    networks:
+      - default
+      - internal
+      - ${CF_NETWORK_INTERFACE}
+    labels:
+      - net.unraid.docker.icon=https://static-00.iconduck.com/assets.00/calibreweb-icon-512x512-snhnkujz.png
+      - net.unraid.docker.webui=http://[IP]:[PORT:8083]
     restart: unless-stopped
+    
 #Networking
 networks:
   internal:
@@ -411,29 +465,3 @@ networks:
   #Remove or replace depending on your cloudflared external network
   cloudflared:
     external: true
-#Tags
-x-dockge:
-  urls:
-    - https://www.plex.tv/
-    - https://hub.docker.com/r/linuxserver/plex
-    - https://tautulli.com/
-    - https://hub.docker.com/r/linuxserver/tautulli
-    - https://overseerr.dev/
-    - https://hub.docker.com/r/linuxserver/overseerr
-    - https://radarr.video/
-    - https://hub.docker.com/r/linuxserver/radarr
-    - https://sonarr.tv/
-    - https://hub.docker.com/r/linuxserver/sonarr
-    - https://www.bazarr.media/
-    - https://hub.docker.com/r/linuxserver/bazarr
-    - https://kometa.wiki/
-    - https://hub.docker.com/r/linuxserver/kometa
-    - https://prowlarr.com/
-    - https://hub.docker.com/r/linuxserver/prowlarr
-    - https://github.com/orgs/FlareSolverr/packages/container/package/flaresolverr
-    - https://sabnzbd.org/
-    - https://hub.docker.com/r/linuxserver/sabnzbd
-    - https://syncthing.net/
-    - https://hub.docker.com/r/linuxserver/syncthing
-    - https://unpackerr.zip/
-    - https://github.com/petersem/posterr
