@@ -227,6 +227,29 @@ services:
       - net.unraid.docker.webui=http://[IP]:[PORT:6768]
     restart: unless-stopped
 
+  #Reaparr
+  reaparr:
+    image: reaparr/reaparr:dev
+    container_name: ${CONTAINER_PREFIX}reaparr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${APPDATA_PATH}/reaparr:/Config
+      - ${DATA_PATH_ROOT}:/Data
+    ports:
+      - 7000:7000
+    networks:
+      - default
+      - internal
+    extra_hosts:
+      - plex:host-gateway
+    labels:
+      - net.unraid.docker.icon=https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTLTDtb9202zPiNgz8R8JXiN0wL-14fSBQAsw&s
+      - net.unraid.docker.webui=http://[IP]:[PORT:7000]
+    restart: unless-stopped
+
   #Lidarr
   lidarr:
     image: lscr.io/linuxserver/lidarr
